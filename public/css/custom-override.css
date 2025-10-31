@@ -1,0 +1,274 @@
+.navbar-nav > li > a:hover, .navbar-nav > li:hover > a, .navbar-nav > li.active > a {
+  border-bottom-color: #5e3079;
+}
+
+.searchform .btn, .searchbar .btn {
+  background: #62BB46;
+  box-sizing: border-box;
+  transition: 0.2s ease-in-out;
+}
+.searchform .btn:hover, .searchbar .btn:hover {
+  background: #5e3079;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link.register {
+  background: #5e3079;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: 0.2s ease-in-out;
+}
+.navbar-expand-lg .navbar-nav .nav-link.register:hover {
+  background: #62BB46;
+}
+
+.jobreqbtn a, .viewallbtn a, .userloginbox .viewallbtn a {
+  background: #5e3079;
+  border-radius: 5px;
+}
+.jobreqbtn a:hover, .viewallbtn a:hover, .userloginbox .viewallbtn a:hover {
+  background: #62BB46;
+}
+
+.emploginbox .viewallbtn a {
+  background: #62BB46;
+}
+.emploginbox .viewallbtn a:hover {
+  color: #ffffff;
+  background: #5e3079;
+}
+
+.titleTop h3 {
+  font-weight: 700;
+}
+.titleTop h3 span {
+  font-weight: 500;
+  color: #62BB46;
+  text-decoration: underline;
+}
+.titleTop .subtitle {
+  color: #62BB46;
+}
+
+.tabswrap {
+  border-bottom: 3px solid #5e3079;
+}
+.tabswrap .nav-tabs > li > a {
+  color: #404041;
+  font-weight: 600;
+}
+.tabswrap .nav-tabs > li > a.active, .tabswrap .nav-tabs > li > a.active:focus {
+  background: #5e3079;
+  border-color: #5e3079;
+  transition: 0.25s ease-in-out;
+}
+
+.catelist li a {
+  font-size: 17px;
+}
+.catelist li a:hover {
+  color: #5e3079;
+}
+
+.jobslist li {
+  margin-top: 10px;
+}
+.jobslist li.col-md-6 {
+  display: table-cell;
+}
+.jobslist li .applybtn {
+  color: #5e3079;
+  border-color: #5e3079;
+  border-radius: 5px;
+  border-width: 2px;
+}
+.jobslist li .applybtn:hover {
+  background: #5e3079;
+}
+.jobslist li h4 a:hover {
+  color: #5e3079;
+}
+.jobslist li .company a {
+  text-transform: uppercase;
+  color: #404041;
+}
+.jobslist li .jobint {
+  height: 100%;
+}
+.jobslist li .jobint .col-md-2, .jobslist li .jobint .col-md-3 {
+  align-self: center;
+}
+.jobslist li .jobint:hover {
+  border-color: #5e3079;
+}
+.jobslist li .jobint .fulltime {
+  background: #62BB46;
+}
+
+.newjbox.row .col-md-4 {
+  display: table-cell;
+  margin-top: initial;
+}
+.newjbox.row .col-md-4 .jobint {
+  height: 100%;
+}
+
+.employerList li .empint {
+  padding: 2px;
+  background: #ffffff;
+  box-shadow: 2px 8px 15px rgba(0, 0, 0, 0.1);
+  display: grid;
+  place-content: center;
+}
+.employerList li img {
+  width: 90px;
+  height: 90px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border: 0;
+  box-shadow: none;
+}
+
+.howlist li .iconcircle i {
+  color: #62BB46;
+}
+
+.searchList li:hover {
+  border-bottom-color: #5e3079;
+}
+.searchList li .fulltime {
+  background: #62BB46;
+}
+.searchList li .jobimg {
+  display: grid;
+  float: none;
+  width: auto;
+  margin-right: unset;
+}
+.searchList li .jobimg img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.searchList li .companyName a {
+  color: #404041;
+}
+.searchList li .jobinfo .cityName {
+  color: #5e3079;
+  font-size: 16px;
+}
+.searchList li .listbtn {
+  margin-top: 0;
+}
+.searchList li .listbtn a {
+  color: #5e3079;
+  border-color: #5e3079;
+  border-radius: 5px;
+  border-width: 2px;
+}
+.searchList li .listbtn a:hover {
+  background: #5e3079;
+}
+
+.subscribe {
+  background-color: #62BB46;
+}
+.subscribe .btn {
+  background: #404041;
+  transition: 0.2s ease;
+}
+.subscribe .btn:hover {
+  background: #5e3079;
+}
+
+.footerWrap {
+  background: #404041;
+}
+.footerWrap .quicklinks li a:hover {
+  color: #ffffff;
+}
+
+.sidebar .optionlist {
+  margin-bottom: 15px;
+}
+.sidebar .optionlist li span {
+  margin-left: 10px;
+}
+.sidebar .view_more {
+  color: #5e3079;
+  font-weight: 700;
+  padding-top: 10px;
+  padding-left: 65%;
+}
+
+.searchnt .btn {
+  background: #62BB46;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: 0.2s ease-in-out;
+}
+.searchnt .btn:hover {
+  background: #5e3079;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 15px;
+}
+.grid-4 li {
+  height: 100%;
+}
+.grid-4 li .compint {
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 2px 8px 15px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+.grid-4 li .compint .imgwrap {
+  display: grid;
+  border-bottom: 2px solid #62BB46;
+}
+.grid-4 li .compint .imgwrap a img {
+  height: 100%;
+  width: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  padding: 5%;
+}
+.grid-4 li .compint h3 {
+  margin-bottom: 25px;
+}
+.grid-4 li .compint h3 a {
+  color: #5e3079;
+  text-transform: uppercase;
+  font-size: 1.15rem;
+}
+.grid-4 li .compint i {
+  color: #5e3079;
+}
+.grid-4 li:hover .compint {
+  border: 2px solid #62BB46;
+}
+.grid-4 li .curentopen, .grid-4 li .loctext {
+  color: #404041;
+  font-weight: 600;
+  display: flex;
+}
+
+.bg-light-grey {
+  background: #ebf2ea;
+}
+
+.pageTitle {
+  padding: 50px 0;
+  background: #5e3079;
+}
+.pageTitle h1 {
+  font-size: 30px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.pageTitle .breadCrumb span {
+  color: #62BB46;
+}/*# sourceMappingURL=custom-override.css.map */
