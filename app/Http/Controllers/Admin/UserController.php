@@ -272,127 +272,126 @@ class UserController extends Controller
     }
 
     public function fetchUsersData(Request $request)
+{
+   if($request->has('cvStatus') && !empty($request->get('cvStatus')))
     {
-       if($request->has('cvStatus') && !empty($request->get('cvStatus')))
+        if($request->get('cvStatus') == 'Active')
         {
-            if($request->get('cvStatus') == 'Active')
-            {
-                $users = User::with('industry','careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '>', 0);      
-            }else{
-                $users = User::with('industry','careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '=', 0);
-            }
+            $users = User::with('industry','careerLevel', 'profileCvs')->withCount(['profileCvs'])->having('profile_cvs_count', '>', 0);      
         }else{
-            $users = User::with('industry','careerLevel')->withCount(['profileCvs']);
+            $users = User::with('industry','careerLevel', 'profileCvs')->withCount(['profileCvs'])->having('profile_cvs_count', '=', 0);
         }
-        // $users = User::select(
-        //                 [
-        //                     'users.id',
-        //                     'users.first_name',
-        //                     'users.middle_name',
-        //                     'users.last_name',
-        //                     'users.email',
-        //                     'users.password',
-        //                     'users.phone',
-        //                     'users.country_id',
-        //                     'users.state_id',
-        //                     'users.city_id',
-        //                     'users.is_immediate_available',
-        //                     'users.num_profile_views',
-        //                     'users.is_active',
-        //                     'users.verified',
-        //                     'users.created_at',
-        //                     'users.updated_at'
-        // ])::with(['profile_cvs']);
-        return Datatables::of($users)
-                        ->addIndexColumn()
-                        ->filter(function ($query) use ($request) {
-                            if ($request->has('id') && !empty($request->id)) {
-                                $query->where('users.id', 'like', "{$request->get('id')}");
-                            }
-                            if ($request->has('name') && !empty($request->name)) {
-                                $query->where(function($q) use ($request) {
-                                    $q->where('users.first_name', 'like', "%{$request->get('name')}%")
-                                    ->orWhere('users.middle_name', 'like', "%{$request->get('name')}%")
-                                    ->orWhere('users.last_name', 'like', "%{$request->get('name')}%");
-                                });
-                            }
-                            if ($request->has('email') && !empty($request->email)) {
-                                $query->where('users.email', 'like', "%{$request->get('email')}%");
-                            }
-                            if($request->has('created_at') && !empty($request->created_at)){
-                                $query->where('users.created_at', 'like', "%{$request->get('created_at')}%");
-                            }
-                             if($request->has('industry') && !empty($request->get('industry'))){
-                                $query->whereHas('industry', function($q) use ($request){
-                                    $q->where('industry', 'like', "%{$request->get('industry')}%");
-                                });
-                            }
-                            if($request->has('job_position') && !empty($request->get('job_position'))){
-                                $query->whereHas('careerLevel', function($q) use ($request){
-                                    $q->where('career_level', 'like', "%{$request->get('job_position')}%");
-                                });
-                            }
-                        })
-                        ->addColumn('cvStatus',function($users){
-                                return (count($users->profileCvs) > 0 ? 'Uploaded' : 'Not Uploaded');
-                        })
-                        ->addColumn('name', function ($users) {
-                            return $users->first_name . ' ' . $users->middle_name . ' ' . $users->last_name;
-                        })
-                         ->addColumn('industry', function ($users) {
-                            return $users->getIndustry('industry');
-                        })
-                           ->addColumn('job_position', function ($users) {
-                            return $users->getCareerLevel('career_level');
-                        })
-                        ->addColumn('action', function ($users) {
-                            /*                             * ************************* */
-                            $active_txt = 'Make Active';
-                            $active_href = 'make_active(' . $users->id . ');';
-                            $active_icon = 'square-o';
-                            if ((int) $users->is_active == 1) {
-                                $active_txt = 'Make InActive';
-                                $active_href = 'make_not_active(' . $users->id . ');';
-                                $active_icon = 'check-square-o';
-                            }
-                            /*                             * ************************* */
-                            /*                             * ************************* */
-                            $verified_txt = 'Not Verified';
-                            $verified_href = 'make_verified(' . $users->id . ');';
-                            $verified_icon = 'square-o';
-                            if ((int) $users->verified == 1) {
-                                $verified_txt = 'Verified';
-                                $verified_href = 'make_not_verified(' . $users->id . ');';
-                                $verified_icon = 'check-square-o';
-                            }
-                            /*                             * ************************* */
-                            return '
-				<div class="btn-group">
-					<button class="btn blue dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action
-						<i class="fa fa-angle-down"></i>
-					</button>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="' . route('edit.user', ['id' => $users->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i>Edit</a>
-						</li>						
-						<li>
-							<a href="javascript:void(0);" onclick="delete_user(' . $users->id . ');" class=""><i class="fa fa-trash-o" aria-hidden="true"></i>Delete</a>
-						</li>
-						<li>
-						<a href="javascript:void(0);" onClick="' . $active_href . '" id="onclick_active_' . $users->id . '"><i class="fa fa-' . $active_icon . '" aria-hidden="true"></i>' . $active_txt . '</a>
-						</li>
-						<li>
-						<a href="javascript:void(0);" onClick="' . $verified_href . '" id="onclick_verified_' . $users->id . '"><i class="fa fa-' . $verified_icon . '" aria-hidden="true"></i>' . $verified_txt . '</a>
-						</li>																																							
-					</ul>
-				</div>';
-                        })
-                        ->rawColumns(['action', 'name','cvStatus'])
-                        ->setRowId(function($users) {
-                            return 'user_dt_row_' . $users->id;
-                        })
-                        ->make(true);
+    }else{
+        $users = User::with('industry','careerLevel', 'profileCvs')->withCount(['profileCvs']);
     }
+    
+    return Datatables::of($users)
+                    ->addIndexColumn()
+                    ->filter(function ($query) use ($request) {
+                        if ($request->has('id') && !empty($request->id)) {
+                            $query->where('users.id', 'like', "{$request->get('id')}");
+                        }
+                        if ($request->has('name') && !empty($request->name)) {
+                            $query->where(function($q) use ($request) {
+                                $q->where('users.first_name', 'like', "%{$request->get('name')}%")
+                                ->orWhere('users.middle_name', 'like', "%{$request->get('name')}%")
+                                ->orWhere('users.last_name', 'like', "%{$request->get('name')}%");
+                            });
+                        }
+                        if ($request->has('email') && !empty($request->email)) {
+                            $query->where('users.email', 'like', "%{$request->get('email')}%");
+                        }
+                        if($request->has('created_at') && !empty($request->created_at)){
+                            $query->where('users.created_at', 'like', "%{$request->get('created_at')}%");
+                        }
+                         if($request->has('industry') && !empty($request->get('industry'))){
+                            $query->whereHas('industry', function($q) use ($request){
+                                $q->where('industry', 'like', "%{$request->get('industry')}%");
+                            });
+                        }
+                        if($request->has('job_position') && !empty($request->get('job_position'))){
+                            $query->whereHas('careerLevel', function($q) use ($request){
+                                $q->where('career_level', 'like', "%{$request->get('job_position')}%");
+                            });
+                        }
+                    })
+                    ->addColumn('cvStatus',function($users){
+                            return (count($users->profileCvs) > 0 ? 'Uploaded' : 'Not Uploaded');
+                    })
+                    ->addColumn('cvs', function($users) {
+                        if (count($users->profileCvs) > 0) {
+                            $html = '';
+                            foreach ($users->profileCvs as $cv) {
+                                $cvPath = asset('cvs/' . $cv->cv_file);
+                                $title = $cv->title ?? 'CV';
+                                $isDefault = $cv->is_default ? ' <span class="label label-success">Default</span>' : '';
+                                $html .= '<a href="' . $cvPath . '" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-info" style="margin:2px 0; display:inline-block;">
+                                            <i class="fa fa-file-pdf-o"></i> ' . htmlspecialchars($title) . '
+                                          </a>' . $isDefault . '<br>';
+                            }
+                            return $html;
+                        } else {
+                            return '<span class="text-muted">No CVs</span>';
+                        }
+                    })
+                    ->addColumn('name', function ($users) {
+                        return $users->first_name . ' ' . $users->middle_name . ' ' . $users->last_name;
+                    })
+                     ->addColumn('industry', function ($users) {
+                        return $users->getIndustry('industry');
+                    })
+                       ->addColumn('job_position', function ($users) {
+                        return $users->getCareerLevel('career_level');
+                    })
+                    ->addColumn('action', function ($users) {
+                        /*                             * ************************* */
+                        $active_txt = 'Make Active';
+                        $active_href = 'make_active(' . $users->id . ');';
+                        $active_icon = 'square-o';
+                        if ((int) $users->is_active == 1) {
+                            $active_txt = 'Make InActive';
+                            $active_href = 'make_not_active(' . $users->id . ');';
+                            $active_icon = 'check-square-o';
+                        }
+                        /*                             * ************************* */
+                        /*                             * ************************* */
+                        $verified_txt = 'Not Verified';
+                        $verified_href = 'make_verified(' . $users->id . ');';
+                        $verified_icon = 'square-o';
+                        if ((int) $users->verified == 1) {
+                            $verified_txt = 'Verified';
+                            $verified_href = 'make_not_verified(' . $users->id . ');';
+                            $verified_icon = 'check-square-o';
+                        }
+                        /*                             * ************************* */
+                        return '
+            <div class="btn-group">
+                <button class="btn blue dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action
+                    <i class="fa fa-angle-down"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="' . route('edit.user', ['id' => $users->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i>Edit</a>
+                    </li>                       
+                    <li>
+                        <a href="javascript:void(0);" onclick="delete_user(' . $users->id . ');" class=""><i class="fa fa-trash-o" aria-hidden="true"></i>Delete</a>
+                    </li>
+                    <li>
+                    <a href="javascript:void(0);" onClick="' . $active_href . '" id="onclick_active_' . $users->id . '"><i class="fa fa-' . $active_icon . '" aria-hidden="true"></i>' . $active_txt . '</a>
+                    </li>
+                    <li>
+                    <a href="javascript:void(0);" onClick="' . $verified_href . '" id="onclick_verified_' . $users->id . '"><i class="fa fa-' . $verified_icon . '" aria-hidden="true"></i>' . $verified_txt . '</a>
+                    </li>                                                                                                                                                           
+                </ul>
+            </div>';
+                    })
+                    ->rawColumns(['action', 'name', 'cvStatus', 'cvs'])
+                    ->setRowId(function($users) {
+                        return 'user_dt_row_' . $users->id;
+                    })
+                    ->make(true);
+}
+
 
     public function makeActiveUser(Request $request)
     {

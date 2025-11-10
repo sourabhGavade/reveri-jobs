@@ -7,6 +7,8 @@ use Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Log;
+
 class ImageUploadingHelper
 {
 
@@ -159,7 +161,7 @@ class ImageUploadingHelper
     public static function get_doc($doc_path, $doc_title, $alt_title_txt = '')
     {
         if (!empty($doc_path) && file_exists(ImageUploadingHelper::real_public_path() . $doc_path)) {
-            return '<a href="' . ImageUploadingHelper::public_path() . $doc_path . '" ' . ' alt="' . $alt_title_txt . '" title="' . $alt_title_txt . '">' . $doc_title . '</a>';
+            return '<a href="' . ImageUploadingHelper::public_path() . $doc_path . '" target="_blank" rel="noopener noreferrer" alt="' . $alt_title_txt . '" title="' . $alt_title_txt . '">' . $doc_title . '</a>';
         } else {
             return 'No Doc Available';
         }

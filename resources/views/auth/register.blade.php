@@ -20,26 +20,25 @@
 
         @include('flash::message')
 
+        @php
+            $usertype = request()->query('usertype', '');
+        @endphp
         
-
            <div class="useraccountwrap">
 
                 <div class="userccount">
-                    <h3 class="text-center mb-5" id="category">Please Select The Category</h3>
-                    <div class="userbtns">
 
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item col-6"><a class="nav-link candidate " id="candidate_btn" >{{__('Candidate')}}</a></li>
-                            <li class="nav-item col-6"><a class="nav-link employer " id="employer_btn" >{{__('Employer')}}</a></li>
-                        </ul>
-
-                    </div>
+                @if($usertype == 'candidate')
+                        <h3 class="text-center mb-5">Candidate Registration</h3>
+                @elseif($usertype == 'employer')    
+                        <h3 class="text-center mb-5">Employer Registration</h3>
+                @endif                    
 
                     <div class="tab-content">
 
-                        <div id="candidate" class="formpanel d-none">
+                        <div id="candidate" class="formpanel {{ $usertype == 'candidate' ? '' : 'd-none' }}">
 
-                            <form class="form-horizontal candidate_form" method="POST" action="{{ route('register') }}">
+                            <form class="form-horizontal candidate_form" method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
 
                                 {{ csrf_field() }}
 
@@ -117,39 +116,44 @@
                                         <strong style="color:red;font-weight:600;">{{ $errors->first('password_confirmation') }}</strong>
                                     </div>
                                 @endif
+
+                                <div class="formrow{{ $errors->has('cv_file') ? ' has-error' : '' }}">
+                                    <label for="">{{__('Upload CV')}} <b class="text-danger">*</b></label>
+                                    <input type="file" name="cv_file" class="form-control" required="required" accept=".pdf,.doc,.docx">
+                                    <small class="form-text text-muted">{{__('Allowed formats: PDF, DOC, DOCX (Max: 5MB)')}}</small>
+                                </div>
                                     
+                                @if ($errors->has('cv_file'))
+                                    <div class="help-block mb-3">
+                                        <strong style="color:red;font-weight:600;">{{ $errors->first('cv_file') }}</strong>
+                                    </div>
+                                @endif
 
-                                    <div class="formrow{{ $errors->has('is_subscribed') ? ' has-error' : '' }}">
-
-                                        <?php
-
-                                        $is_checked = '';
-
-                                        if (old('is_subscribed', 1)) {
-
-                                            $is_checked = 'checked="checked"';
-
-                                        }
-
-                                        ?>
-
+                                <div class="formrow{{ $errors->has('is_subscribed') ? ' has-error' : '' }} d-flex align-items-center mb-3">
+                                    <?php
+                                    $is_checked = '';
+                                    if (old('is_subscribed', 1)) {
+                                        $is_checked = 'checked="checked"';
+                                    }
+                                    ?>
+                                    <input type="checkbox" value="1" name="is_subscribed" {{$is_checked}} id="candidate_subscribe" style="width: auto; margin-right: 8px;" />
+                                    <label for="candidate_subscribe" class="mb-0">{{__('Subscribe to our newsletter')}}</label>
                                     
+                                    @if ($errors->has('is_subscribed')) <span class="help-block"> <strong>{{ $errors->first('is_subscribed') }}</strong> </span> @endif
+                                </div>
 
-                                    <input type="checkbox" value="1" name="is_subscribed" {{$is_checked}} />{{__('Subscribe to news letter')}}
-                                    
-                                    @if ($errors->has('is_subscribed')) <span class="help-block"> <strong>{{ $errors->first('is_subscribed') }}</strong> </span> @endif </div>
-
-                                <div class="formrow{{ $errors->has('terms_of_use') ? ' has-error' : '' }}">
-                                    <input type="checkbox" required value="1" name="terms_of_use" />
-                                    <a href="{{url('cms/terms-of-use')}}">{{__('I accept Terms of Use')}}</a>
+                                <div class="formrow{{ $errors->has('terms_of_use') ? ' has-error' : '' }} d-flex align-items-center mb-3">
+                                    <input type="checkbox" required value="1" name="terms_of_use" id="candidate_terms" style="width: auto; margin-right: 8px;" />
+                                    <label for="candidate_terms" class="mb-0"><a href="{{url('cms/terms-of-use')}}">{{__('I accept Terms of Use')}}</a></label>
                                 </div>
                                 @if ($errors->has('terms_of_use'))
                                     <div class="help-block mb-3">
                                         <strong style="color:red;font-weight:600;">{{ $errors->first('terms_of_use') }}</strong>
                                     </div>
                                 @endif
+                                
                                 <div class="row justify-content-center">
-                                    <div id="recaptcha-container" class="my-3" data-callback="recaptchaCallback"></div>
+                                    <div id="recaptcha-container" class="my-3"></div>
                                 </div>
                              
 
@@ -159,7 +163,7 @@
 
                         </div>
 
-                        <div id="employer" class="formpanel d-none">
+                        <div id="employer" class="formpanel {{ $usertype == 'employer' ? '' : 'd-none' }}">
 
                             <form class="form-horizontal employer_form" method="POST" action="{{ route('company.register') }}">
 
@@ -218,29 +222,22 @@
                                     </div>
                                 @endif
 
-                                    <div class="formrow{{ $errors->has('is_subscribed') ? ' has-error' : '' }}">
+                                <div class="formrow{{ $errors->has('is_subscribed') ? ' has-error' : '' }} d-flex align-items-center mb-3">
+                                    <?php
+                                    $is_checked = '';
+                                    if (old('is_subscribed', 1)) {
+                                        $is_checked = 'checked="checked"';
+                                    }
+                                    ?>
+                                    <input type="checkbox" value="1" name="is_subscribed" {{$is_checked}} id="employer_subscribe" style="width: auto; margin-right: 8px;" />
+                                    <label for="employer_subscribe" class="mb-0">{{__('Subscribe to our newsletter')}}</label>
 
-                                        <?php
+                                    @if ($errors->has('is_subscribed')) <span class="help-block"> <strong>{{ $errors->first('is_subscribed') }}</strong> </span> @endif
+                                </div>
 
-                                        $is_checked = '';
-
-                                        if (old('is_subscribed', 1)) {
-
-                                            $is_checked = 'checked="checked"';
-
-                                        }
-
-                                        ?>
-
-                                    
-
-                                    <input type="checkbox" value="1" name="is_subscribed" {{$is_checked}} />{{__('Subscribe to news letter')}}
-
-                                    @if ($errors->has('is_subscribed')) <span class="help-block"> <strong>{{ $errors->first('is_subscribed') }}</strong> </span> @endif </div>
-
-                                <div class="formrow{{ $errors->has('terms_of_use') ? ' has-error' : '' }}">
-                                    <input type="checkbox" required value="1" name="terms_of_use" />
-                                    <a href="{{url('terms-of-use')}}">{{__('I accept Terms of Use')}}</a>
+                                <div class="formrow{{ $errors->has('terms_of_use') ? ' has-error' : '' }} d-flex align-items-center mb-3">
+                                    <input type="checkbox" required value="1" name="terms_of_use" id="employer_terms" style="width: auto; margin-right: 8px;" />
+                                    <label for="employer_terms" class="mb-0"><a href="{{url('terms-of-use')}}">{{__('I accept Terms of Use')}}</a></label>
                                 </div>
                                 
                                 @if ($errors->has('terms_of_use'))
@@ -254,7 +251,7 @@
                                 </div>
                             
 
-                                <input type="submit" id="employer_form" class="btn" value="{{__('Register')}}">
+                                <input type="submit" id="employer_form" class="btn" disabled value="{{__('Register')}}">
 
                             </form>
 
@@ -264,10 +261,9 @@
 
                     <!-- sign up form -->
 
-                    <div class="newuser"><i class="fa fa-user" aria-hidden="true"></i> {{__('Have Account')}}? <a href="{{route('login')}}">{{__('Sign in')}}</a></div>
+                    <div class="newuser"><i class="fa fa-user" aria-hidden="true"></i> {{__('Have Account')}}? <a href="{{ route('login') }}{{ $usertype ? '?usertype=' . $usertype : '' }}">{{__('Sign in')}}</a></div>
 
                     <!-- sign up form end--> 
-
 
 
                 </div>
@@ -283,51 +279,10 @@
 @push('scripts')
     <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase.js"></script>
     <script>
-        function recaptchaCallback(type) {
-            if(type == 'emp')
-            {
-                $('#employer_form').removeAttr('disabled');
-            }else{
-                $('#candidate_form').removeAttr('disabled');
-            }
-        };
+        var usertypeParam = "{{ $usertype }}";
+        var recaptchaRendered = false;
+        var currentFormType = '';
         
-        function resetRecaptcha(type)
-        {
-            recaptchaVerifier.reset();
-            if(type == 'emp')
-            {
-                $('#employer_form').attr('disabled',true);
-            }else{
-                $('#candidate_form').attr('disabled',true);
-            }
-        }
-        
-        function render(type) {
-            if(type == 'emp')
-            {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container1', {
-                  'size': 'normal',
-                  'callback': function(response) {
-                    recaptchaCallback(type);
-                  },
-                  'expired-callback': function() {
-                    resetRecaptcha(type);
-                  }
-                });
-            }else{
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                  'size': 'normal',
-                  'callback': function(response) {
-                    recaptchaCallback(type);
-                  },
-                  'expired-callback': function() {
-                    resetRecaptcha(type);
-                  }
-                });
-            }
-            recaptchaVerifier.render();
-        }
         const firebaseConfig = {
             apiKey: "AIzaSyDxAkrf3so0wyN4M-aQKNR7b_UdVu7fxEk",
             authDomain: "reveri-jobs.firebaseapp.com",
@@ -338,6 +293,68 @@
             measurementId: "G-6T98T17FVJ"
         };
         firebase.initializeApp(firebaseConfig);
+        
+        function recaptchaCallback() {
+            // Enable the appropriate submit button based on current form type
+            if(currentFormType == 'emp')
+            {
+                $('#employer_form').removeAttr('disabled');
+            }else{
+                $('#candidate_form').removeAttr('disabled');
+            }
+        };
+        
+        function resetRecaptcha()
+        {
+            if(window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+            }
+            $('#employer_form').attr('disabled',true);
+            $('#candidate_form').attr('disabled',true);
+            recaptchaRendered = false;
+        }
+        
+        function render(type) {
+            // Prevent rendering multiple times
+            if(recaptchaRendered) {
+                return;
+            }
+            
+            currentFormType = type;
+            
+            if(type == 'emp')
+            {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container1', {
+                  'size': 'normal',
+                  'callback': function(response) {
+                    recaptchaCallback();
+                  },
+                  'expired-callback': function() {
+                    resetRecaptcha();
+                  }
+                });
+            }else{
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                  'size': 'normal',
+                  'callback': function(response) {
+                    recaptchaCallback();
+                  },
+                  'expired-callback': function() {
+                    resetRecaptcha();
+                  }
+                });
+            }
+            
+            try {
+                recaptchaVerifier.render().then(function(widgetId) {
+                    window.recaptchaWidgetId = widgetId;
+                    recaptchaRendered = true;
+                });
+            } catch(error) {
+                console.error('Error rendering reCAPTCHA:', error);
+            }
+        }
+        
         function showPassword(type,confirm)
         {
             if(confirm == 'normal')
@@ -384,44 +401,60 @@
         
         function handleCandidateBtn() {
             localStorage.setItem('type','candidate');
-            $(this).addClass('active')
-            $(this).parent().removeClass('col-6')
-            $(this).parent().addClass('col-12')
-            $('#employer_btn').addClass('d-none')
-            $('#category').addClass('d-none')
+            $('#candidate_btn').addClass('active');
+            $('#candidate_btn').parent().removeClass('col-6');
+            $('#candidate_btn').parent().addClass('col-12');
+            $('#employer_btn').addClass('d-none');
+            $('#category').addClass('d-none');
             $('#candidate').removeClass('d-none');
-            render('can');
+            
+            // Small delay to ensure container is visible before rendering
+            setTimeout(function() {
+                if(!recaptchaRendered) {
+                    render('can');
+                }
+            }, 100);
         }
+        
         function handleEmployerBtn() {
             localStorage.setItem('type','employer');
-            $(this).addClass('active')
-            $(this).parent().removeClass('col-6')
-            $(this).parent().addClass('col-12')
-            $('#candidate_btn').addClass('d-none')
-            $('#category').addClass('d-none')
-            $('#employer').removeClass('d-none')
-            render('emp');
+            $('#employer_btn').addClass('active');
+            $('#employer_btn').parent().removeClass('col-6');
+            $('#employer_btn').parent().addClass('col-12');
+            $('#candidate_btn').addClass('d-none');
+            $('#category').addClass('d-none');
+            $('#employer').removeClass('d-none');
+            
+            // Small delay to ensure container is visible before rendering
+            setTimeout(function() {
+                if(!recaptchaRendered) {
+                    render('emp');
+                }
+            }, 100);
         }
 
         $(document).ready(function () {
-            if(localStorage.getItem('type') == 'candidate'){
+            // Check URL parameter first, then fallback to localStorage
+            if(usertypeParam == 'candidate'){
+                handleCandidateBtn();
+            } else if(usertypeParam == 'employer') {
+                handleEmployerBtn();
+            } else if(localStorage.getItem('type') == 'candidate'){
                 handleCandidateBtn();
             } else if(localStorage.getItem('type') == 'employer') {
                 handleEmployerBtn();
             }
         });
 
-
         $('#candidate_btn').click(function(){
             handleCandidateBtn();
         });
 
-
         $('#employer_btn').click(function(){
-            handleEmployerBtn()
+            handleEmployerBtn();
         });
     </script>
 @endpush
 @include('includes.footer')
 
-@endsection 
+@endsection

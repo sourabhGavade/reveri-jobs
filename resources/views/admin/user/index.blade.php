@@ -4,9 +4,24 @@
     .table td, .table th {
         font-size: 12px;
         line-height: 2.42857 !important;
-    }	
-     .table tbody tr td:nth-child(1) {
+    }   
+    .table tbody tr td:nth-child(1) {
         text-align: center;
+    }
+    .cv-link {
+        display: inline-block;
+        margin: 2px;
+        padding: 2px 5px;
+        font-size: 11px;
+    }
+    /* Make table scrollable horizontally */
+    .table-container {
+        overflow-x: auto;
+    }
+    /* Compact CV display */
+    .cv-wrapper {
+        max-width: 180px;
+        white-space: normal;
     }
 </style>
 <div class="page-content-wrapper"> 
@@ -51,6 +66,7 @@
                                             <td><input type="text" class="form-control" name="industry" id="industry" autocomplete="off"></td>
                                             <td><select class="form-control" name="cvStatus" id="cvStatus"><option value="">All</option><option value="Active">Uploaded</option><option value="Inactive">Not Uploaded</option></select></td>
                                             <td></td>
+                                            <td></td>
                                         </tr>
                                         <tr role="row" class="heading"> 
                                             <th><input type="checkbox" id="select-all-2" ></th>
@@ -58,15 +74,17 @@
                                             <th>Name</th>
                                             <th>Email</th>                                        
                                             <th>Date</th>           
-                                             <th>job Position</th>
+                                            <th>Job Position</th>
                                             <th>Industry</th>
-                                            <th>Is CV Uploaded?</th>
+                                            <th>CV Status</th>
+                                            <th>View CVs</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
-                                </table></form>
+                                </table>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -85,11 +103,9 @@
             serverSide: true,
             stateSave: true,
             searching: false,
-            "order": [[0, "desc"]],
-            /*		
-             paging: true,
-             info: true,
-             */
+            scrollX: true,
+            autoWidth: false,
+            "order": [[1, "desc"]],
             ajax: {
                 url: '{!! route('fetch.data.users') !!}',
                 data: function (d) {
@@ -102,31 +118,32 @@
                     d.industry = $('input[name=industry]').val();
                     d.cvStatus = $('#cvStatus').val();
                 }
-            }, columns: [
-                /*{data: 'id_checkbox', name: 'id_checkbox', orderable: false, searchable: false},*/
-                 {
+            }, 
+            columns: [
+                {
                     data: 'id',
                     name: 'id',
                     orderable: false,
                     searchable: false,
+                    width: '40px',
                     render: function(data, type, row, meta) {
                         return '<input type="checkbox" class="user-checkbox " value="' + data + '">';
                     }
                 },
-                {data: 'id', name: 'id'},
-                {data: 'name', name: 'name'},
-                {data: 'email', name: 'email'},
-                {data: 'created_at', name: 'created_at',render: function (data, type, row, meta) {
+                {data: 'id', name: 'id', width: '50px'},
+                {data: 'name', name: 'name', width: '150px'},
+                {data: 'email', name: 'email', width: '180px'},
+                {data: 'created_at', name: 'created_at', width: '100px', render: function (data, type, row, meta) {
                     return moment.utc(data).local().format('YYYY-MM-DD');
                 }},
-                 {data:'job_position',name:'job_position'},
-                {data:'industry',name:'industry'},
-                {data:'cvStatus',name:'cvStatus'},
-                {data: 'action', name: 'action', orderable: false, searchable: false}
+                {data: 'job_position', name: 'job_position', width: '120px'},
+                {data: 'industry', name: 'industry', width: '150px'},
+                {data: 'cvStatus', name: 'cvStatus', width: '100px'},
+                {data: 'cvs', name: 'cvs', orderable: false, searchable: false, width: '180px'},
+                {data: 'action', name: 'action', orderable: false, searchable: false, width: '100px'}
             ]
         });
         
-
         // Select all checkboxes
         $('#select-all, #select-all-2').on('click', function(){
             var checked = $(this).prop('checked');
@@ -160,6 +177,7 @@
                 });
             }
         });
+        
         $('#user-search-form').on('submit', function (e) {
             oTable.draw();
             e.preventDefault();
@@ -193,6 +211,7 @@
             e.preventDefault();
         });
     });
+    
     function delete_user(id) {
         if (confirm('Are you sure! you want to delete?')) {
             $.post("{{ route('delete.user') }}", {id: id, _method: 'DELETE', _token: '{{ csrf_token() }}'})
@@ -208,6 +227,7 @@
                     });
         }
     }
+    
     function make_active(id) {
         $.post("{{ route('make.active.user') }}", {id: id, _method: 'PUT', _token: '{{ csrf_token() }}'})
                 .done(function (response) {
@@ -221,6 +241,7 @@
                     }
                 });
     }
+    
     function make_not_active(id) {
         $.post("{{ route('make.not.active.user') }}", {id: id, _method: 'PUT', _token: '{{ csrf_token() }}'})
                 .done(function (response) {
@@ -234,6 +255,7 @@
                     }
                 });
     }
+    
     function make_verified(id) {
         $.post("{{ route('make.verified.user') }}", {id: id, _method: 'PUT', _token: '{{ csrf_token() }}'})
                 .done(function (response) {
@@ -247,6 +269,7 @@
                     }
                 });
     }
+    
     function make_not_verified(id) {
         $.post("{{ route('make.not.verified.user') }}", {id: id, _method: 'PUT', _token: '{{ csrf_token() }}'})
                 .done(function (response) {

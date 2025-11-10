@@ -12,6 +12,8 @@
             
             <div class="useraccountwrap">
                 <div class="userccount">
+
+                <!--
                     <h3 class="text-center mb-5" id="category">Please Select The Category</h3>
                     <div class="userbtns">
                         <ul class="nav nav-tabs">
@@ -20,10 +22,20 @@
                             <li class="nav-item col-6"><a class="nav-link employer " id="employer_btn" >{{__('Employer')}}</a></li>
                         </ul>
                     </div>
-					
-					
+-->
+
+                    @php
+                        $userType = request()->query('usertype', 'candidate'); // default: candidate
+                    @endphp
+
+                    @if($userType == 'candidate')
+                        <h3 class="text-center mb-5" id="category">Candidate Login</h3>
+                    @elseif($userType == 'employer')    
+                        <h3 class="text-center mb-5" id="category">Employer Login</h3>
+                    @endif
+
                     <div class="tab-content">
-                        <div id="candidate" class="formpanel active">
+                        <div id="candidate" class="formpanel d-none">
                             <div class="socialLogin">
                                 <h5>{{__('Login with Social')}}</h5>
                                 <a href="{{ url('login/jobseeker/facebook')}}" class="fb"><i class="fa fa-facebook" aria-hidden="true"></i></a><a href="{{ url('login/jobseeker/twitter')}}" class="tw"><i class="fa fa-twitter" aria-hidden="true"></i></a> 
@@ -93,20 +105,57 @@
                             <!-- sign up form -->
                             <div class="newuser"><i class="fa fa-user" aria-hidden="true"></i> {{__('Forgot Your Password')}}? <a href="{{ route('company.password.request') }}">{{__('Click here')}}</a></div>
                             <!-- sign up form end-->
-                        </div>                            
-                        <div class="newuser"><i class="fa fa-user" aria-hidden="true"></i> {{__('New User')}}? <a href="{{route('register')}}">{{__('Register Here')}}</a></div>
+                        </div>     
+                                               
+                        @php
+                            $userType = request()->query('usertype', 'candidate');
+                        @endphp
+
+                        <div class="newuser">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            {{ __('New User') }}?
+                            <a href="{{ url('/register?usertype=' . $userType) }}">{{ __('Register Here') }}</a>
+                        </div>
 
                     </div>
-                    <!-- login form -->
-
-                     
+                    <!-- login form -->                     
 
                 </div>
-            </div>
-        
+            </div>        
     </div>
 </div>
 @push('scripts')
+
+<script>
+    function showPassword(type) {
+
+        var x = document.getElementById(type + 'password');
+        var btn = type === 'candidate' ? '#basic-addon1' : '#basic-addon2';
+        if (x.type === "password") {
+            x.type = "text";
+            $(btn).html('<i class="fa fa-eye"></i>');
+        } else {
+            x.type = "password";
+            $(btn).html('<i class="fa fa-eye-slash"></i>');
+        }
+    }
+
+    $(document).ready(function () {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userType = urlParams.get('usertype') || 'candidate';
+
+        if (userType === 'employer') {
+            $('#employer').removeClass('d-none');
+            $('#candidate').addClass('d-none');
+        } else {
+            $('#candidate').removeClass('d-none');
+            $('#employer').addClass('d-none');
+        }
+    });
+</script>
+
+
     <script>
         function showPassword(type)
         {

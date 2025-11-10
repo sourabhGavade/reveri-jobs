@@ -29,7 +29,7 @@ class CheckDisposableEmail implements Rule
         
 
         if (!file_exists($filePath)) {
-            return false; // Allow validation if the file doesn't exist
+            return true; // Allow validation if the file doesn't exist
         }
 
         if (filter_var($value, FILTER_VALIDATE_EMAIL)) {

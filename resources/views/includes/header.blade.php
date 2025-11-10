@@ -66,10 +66,33 @@
                                     </form>
                                 </ul>
                             </li>
-                            @endif @if(!Auth::user() && !Auth::guard('company')->user())
-                            <li class="nav-item"><a href="{{route('login')}}" class="nav-link">{{__('Sign in')}}</a> </li>
-							<li class="nav-item"><a href="{{route('register')}}" class="nav-link register">{{__('Register')}}</a> </li>                            
-                            @endif
+                            @endif 
+                            
+                            @if(!Auth::user() && !Auth::guard('company')->user())
+    <li class="nav-item dropdown userbtn">
+        <a href="#" class="nav-link dropdown-toggle" id="signinDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ __('Sign In') }}
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="signinDropdown">
+            <li><a href="{{ url('/login?usertype=candidate') }}" class="dropdown-item">{{ __('Candidate Login') }}</a></li>
+            <li><a href="{{ url('/login?usertype=employer') }}" class="dropdown-item">{{ __('Employer Login') }}</a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a href="#" class="nav-link register dropdown-toggle" id="registerDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ __('Register') }}
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="registerDropdown">
+            <li><a href="{{ url('/register?usertype=candidate') }}" class="dropdown-item">{{ __('Candidate Registration') }}</a></li>
+            <li><a href="{{ url('/register?usertype=employer') }}" class="dropdown-item">{{ __('Employer Registration') }}</a></li>
+        </ul>
+    </li>
+@endif
+
+
+
+
                             <li class="dropdown userbtn"><a href="{{url('/')}}"><img src="{{asset('/')}}images/lang.png" alt="" class="userimg" /></a>
                                 <ul class="dropdown-menu">
                                     @foreach($siteLanguages as $siteLang)

@@ -412,5 +412,31 @@ class CompanyController extends Controller
             echo 'notok';
         }
     }
+
+    public function deleteCompaniesBulk(Request $request){
+
+        $ids = $request->input('ids', []);
+    
+        if (!empty($ids)) {
+        
+            try {
+
+                // Loop through each company and delete with logo cleanup
+                foreach ($ids as $id) {
+                    $company = Company::find($id);
+                    if ($company) {
+                        $this->deleteCompanyLogo($company->id);
+                        $company->delete();
+                    }
+                }
+                return response()->json(['status' => 'ok']);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'notok', 'message' => $e->getMessage()], 500);
+            }
+        }
+    
+        return response()->json(['status' => 'notok', 'message' => 'No companies selected'], 400);
+    }
+
     
 }

@@ -23,7 +23,6 @@
     .datepicker>div {
 
         display: block;
-
     }
 
 </style>
