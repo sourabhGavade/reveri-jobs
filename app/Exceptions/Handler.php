@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Jrean\UserVerification\Exceptions\UserNotVerifiedException;
 
 class Handler extends ExceptionHandler
 {
@@ -50,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        // Handle unverified user exception
+        if ($exception instanceof UserNotVerifiedException) {
+            return redirect()->route('email-verification.error')
+                ->with('error', 'Please verify your email address before accessing this page.');
+        }
+
         return parent::render($request, $exception);
     }
 }

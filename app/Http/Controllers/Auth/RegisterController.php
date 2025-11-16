@@ -56,7 +56,7 @@ class RegisterController extends Controller
                 'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120', // 5MB max
             ]);
         }
-
+    
         $user = new User();
         $user->first_name = $request->input('first_name');
         $user->middle_name = $request->input('middle_name');
@@ -64,15 +64,14 @@ class RegisterController extends Controller
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
         $user->is_active = 1;
-        $user->verified = 1;
+        $user->verified = 0;
         $user->save();
         
         /*         * *********************** */
         $user->name = $user->getName();
         $user->update();
         /*         * *********************** */
-
-        // Handle CV file upload using existing ProfileCv mechanism
+    
         if ($request->hasFile('cv_file')) {
             $this->storeRegistrationCv($request, $user->id);
         }
@@ -83,9 +82,10 @@ class RegisterController extends Controller
         UserVerification::generate($user);
         UserVerification::send($user, 'User Verification', config('mail.recieve_to.address'), config('mail.recieve_to.name'));
         
-        return $this->registered($request, $user) ?: redirect($this->redirectPath());
+        // Redirect to verification notice instead of home
+        return redirect()->route('email-verification.error');
     }
-
+    
     /**
      * Store CV uploaded during registration     
      */
@@ -107,4 +107,26 @@ class RegisterController extends Controller
         }
     }
 
+    public function resendVerificationEmail(Request $request){
+
+        // Check if already verified
+        if ($request->user()->verified) {
+            return redirect()->route('home')->with('success', 'Your email is already verified!');
+        }
+
+        // Generate and send new verification email
+        UserVerification::generate($request->user());
+        UserVerification::send(
+            $request->user(), 
+            'User Verification', 
+                config('mail.recieve_to.address'), 
+                config('mail.recieve_to.name')
+        );
+
+        return back()->with('success', 'Verification email has been resent! Please check your inbox.');
+    }
+
+
 }
+
+

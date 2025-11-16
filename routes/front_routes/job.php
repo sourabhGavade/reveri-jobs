@@ -6,7 +6,7 @@ Route::post('apply/{slug}', 'Job\JobController@postApplyJob')->name('post.apply.
 Route::get('jobs', 'Job\JobController@jobsBySearch')->name('job.list');
 Route::get('add-to-favourite-job/{job_slug}', 'Job\JobController@addToFavouriteJob')->name('add.to.favourite');
 Route::get('remove-from-favourite-job/{job_slug}', 'Job\JobController@removeFromFavouriteJob')->name('remove.from.favourite');
-Route::get('my-job-applications', 'Job\JobController@myJobApplications')->name('my.job.applications');
+Route::get('my-job-applications', 'Job\JobController@myJobApplications')->name('my.job.applications')->middleware(['auth', 'isVerified']);
 Route::get('my-favourite-jobs', 'Job\JobController@myFavouriteJobs')->name('my.favourite.jobs');
 Route::get('post-job', 'Job\JobPublishController@createFrontJob')->name('post.job');
 Route::post('store-front-job', 'Job\JobPublishController@storeFrontJob')->name('store.front.job');

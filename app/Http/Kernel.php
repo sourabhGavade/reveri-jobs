@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'checkCompanyProfileCompleted'=>\App\Http\Middleware\RedirectIfProfileCompleted::class,
         'company' => \App\Http\Middleware\RedirectIfCompanyNotAuthenticated::class,
         'company.guest' => \App\Http\Middleware\RedirectIfCompanyAuthenticated::class,
+        'isVerified' => \Jrean\UserVerification\Middleware\IsVerified::class,
     ];
 
 }

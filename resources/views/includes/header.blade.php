@@ -69,7 +69,9 @@
                             @endif 
                             
                             @if(!Auth::user() && !Auth::guard('company')->user())
-    <li class="nav-item dropdown userbtn">
+
+    <!-- Sign In - Desktop Dropdown -->
+    <li class="nav-item dropdown signin-dropdown d-none d-lg-block">
         <a href="#" class="nav-link dropdown-toggle" id="signinDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{ __('Sign In') }}
         </a>
@@ -79,16 +81,41 @@
         </ul>
     </li>
 
-    <li class="nav-item dropdown">
-        <a href="#" class="nav-link register dropdown-toggle" id="registerDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <!-- Sign In - Mobile Submenu -->
+    <li class="nav-item d-lg-none mobile-parent">
+        <a class="nav-link">{{ __('Sign In') }}</a>
+    </li>
+    <li class="nav-item d-lg-none mobile-child">
+        <a href="{{ url('/login?usertype=candidate') }}" class="nav-link">{{ __('Candidate Login') }}</a>
+    </li>
+    <li class="nav-item d-lg-none mobile-child">
+        <a href="{{ url('/login?usertype=employer') }}" class="nav-link">{{ __('Employer Login') }}</a>
+    </li>
+
+    <!-- Register - Desktop Dropdown -->
+    <li class="nav-item dropdown register-dropdown d-none d-lg-block">
+        <a href="#" class="nav-link dropdown-toggle register" id="registerDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{ __('Register') }}
         </a>
         <ul class="dropdown-menu" aria-labelledby="registerDropdown">
-            <li><a href="{{ url('/register?usertype=candidate') }}" class="dropdown-item">{{ __('Candidate Registration') }}</a></li>
-            <li><a href="{{ url('/register?usertype=employer') }}" class="dropdown-item">{{ __('Employer Registration') }}</a></li>
+            <li><a href="{{ url('/register?usertype=candidate') }}" class="dropdown-item">{{ __('Register as a Candidate') }}</a></li>
+            <li><a href="{{ url('/register?usertype=employer') }}" class="dropdown-item">{{ __('Register as an Employer') }}</a></li>
         </ul>
     </li>
+
+    <!-- Register - Mobile Submenu -->
+    <li class="nav-item d-lg-none mobile-parent">
+        <a class="nav-link">{{ __('Register') }}</a>
+    </li>
+    <li class="nav-item d-lg-none mobile-child">
+        <a href="{{ url('/register?usertype=candidate') }}" class="nav-link">{{ __('Register as a Candidate') }}</a>
+    </li>
+    <li class="nav-item d-lg-none mobile-child">
+        <a href="{{ url('/register?usertype=employer') }}" class="nav-link">{{ __('Register as an employer') }}</a>
+    </li>
+
 @endif
+
 
 
 

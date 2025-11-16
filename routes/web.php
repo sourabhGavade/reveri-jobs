@@ -42,7 +42,7 @@ Route::post('set-locale', 'IndexController@setLocale')->name('set.locale');
 
 /* * ******** HomeController ************ */
 
-Route::get('home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home')->middleware(['auth', 'isVerified']);
 
 /* * ******** TypeAheadController ******* */
 
@@ -61,6 +61,9 @@ Route::get('check-package-validity', 'CronController@checkPackageValidity');
 Route::get('email-verification/error', 'Auth\RegisterController@getVerificationError')->name('email-verification.error');
 
 Route::get('email-verification/check/{token}', 'Auth\RegisterController@getVerification')->name('email-verification.check');
+Route::post('email-verification/resend', 'Auth\RegisterController@resendVerificationEmail')
+    ->name('email-verification.resend')
+    ->middleware('auth');
 
 Route::get('company-email-verification/error', 'Company\Auth\RegisterController@getVerificationError')->name('company.email-verification.error');
 
@@ -127,7 +130,7 @@ include_once($real_path . 'site_user.php');
 
 /* * ******** User Auth ************ */
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 /* * ******** Company Auth ************ */
 
