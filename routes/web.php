@@ -132,6 +132,10 @@ include_once($real_path . 'site_user.php');
 
 Auth::routes(['verify' => true]);
 
+Route::post('register', 'Auth\RegisterController@register')
+    ->middleware('throttle:5,60')
+    ->name('register');
+
 /* * ******** Company Auth ************ */
 
 include_once($real_path . 'company_auth.php');
