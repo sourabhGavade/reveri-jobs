@@ -1,6 +1,97 @@
 <?php 
     $siteSetting = DB::table('site_settings')->first();
 ?>
+
+<style>
+.navbar-nav .userbtn > a {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 8px;
+}
+
+.navbar-nav .userbtn .userimg,
+.navbar-nav .userbtn img {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.navbar-nav .userbtn .dropdown-menu {
+    min-width:220px;
+    padding:6px 0;
+    margin-top:8px;
+    border-radius:4px;
+}
+
+.navbar-nav .userbtn .dropdown-menu .nav-item,
+.navbar-nav .userbtn .dropdown-menu li {
+    width:100%;
+}
+
+.navbar-nav .userbtn .dropdown-menu .nav-link {
+    display:flex;
+    align-items:center;
+    padding:6px 16px;
+    font-size:14px;
+    line-height:1.4;
+    white-space:nowrap;
+}
+
+.navbar-nav .userbtn .dropdown-menu .nav-link i {
+    margin-right:8px;
+    width:16px;
+    text-align:center;
+}
+
+.navbar-nav .userbtn .dropdown-menu > li:first-child .nav-link {
+    padding-top:8px;
+}
+.navbar-nav .userbtn .dropdown-menu > li:last-child .nav-link {
+    padding-bottom:8px;
+}
+
+
+.navbar-nav {
+    display:flex;
+    align-items:center;
+}
+
+.navbar-nav .userbtn,
+.navbar-nav > li.userbtn,
+.navbar-nav > li:last-child {
+    display:flex;
+    align-items:center;
+    margin-top:-2px;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link.register{
+    margin-top:-2px;
+}
+
+.navbar-nav .userbtn > a,
+.navbar-nav > li.userbtn > a,
+.navbar-nav > li:last-child > a {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    height:40px;          
+    padding:0 8px;
+}
+
+.navbar-nav .userbtn img,
+.navbar-nav > li:last-child img {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}
+</style>
+
+
+
 <div class="header">
     <div class="container-fluid">
         <div class="row align-items-center">
