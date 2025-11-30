@@ -1,7 +1,6 @@
 <?php
 
 
-
 /*
 
   |--------------------------------------------------------------------------
@@ -21,7 +20,6 @@
   |
 
  */
-
 
 
 Route::post('/razorpay-pay', 'RazorpayPaymentController@index')->name('razorpayindex');
@@ -193,8 +191,3 @@ Route::get('/clear-cache', function () {
   return 'DONE'; //Return anything
 
 });
-
-
-
-
-

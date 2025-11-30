@@ -48,15 +48,41 @@ class RegisterController extends Controller
         $this->middleware('guest', ['except' => ['getVerification', 'getVerificationError']]);
     }
 
-    public function register(UserFrontRegisterFormRequest $request)
-    {
+    public function register(UserFrontRegisterFormRequest $request){
+
+        // Block spam names (URLs, numbers, foreign scripts)
+        $nameValidator = Validator::make($request->all(), [
+            'first_name' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[\\p{L}\\s\\-\\\'\\.]+$/u',
+                'regex:/^(?!.*(http|www|tinyurl|\\.com|\\.ru|\\.link|\\d{6,}|\\p{Cyrillic}|\\p{Arabic}|\\p{Devanagari}|\\p{Hiragana}|\\p{Katakana}|\\p{Hangul}|\\p{Greek}|\\p{Hebrew}|\\p{Thai}))[\\p{L}\\s\\-\\\'\\.]+$/u'
+            ],
+            'middle_name' => 'nullable|string|max:50|regex:/^[\\p{L}\\s\\-\\\'\\.]+$/u',
+            'last_name' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[\\p{L}\\s\\-\\\'\\.]+$/u',
+                'regex:/^(?!.*(http|www|tinyurl|\\.com|\\.ru|\\.link|\\d{6,}|\\p{Cyrillic}|\\p{Arabic}|\\p{Devanagari}|\\p{Hiragana}|\\p{Katakana}|\\p{Hangul}|\\p{Greek}|\\p{Hebrew}|\\p{Thai}))[\\p{L}\\s\\-\\\'\\.]+$/u'
+            ]
+        ], [
+            'first_name.regex' => 'Invalid name format. Only letters, spaces, hyphens, apostrophes allowed.',
+            'last_name.regex' => 'Invalid name format. Only letters, spaces, hyphens, apostrophes allowed.'
+        ]); 
+
+        if ($nameValidator->fails()) {
+            return back()->withErrors($nameValidator)->withInput();
+        }
+
         // Validate CV file if provided
         if ($request->hasFile('cv_file')) {
             $request->validate([
-                'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120', // 5MB max
+                'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120',
             ]);
         }
-    
+
         $user = new User();
         $user->first_name = $request->input('first_name');
         $user->middle_name = $request->input('middle_name');
@@ -66,25 +92,23 @@ class RegisterController extends Controller
         $user->is_active = 1;
         $user->verified = 0;
         $user->save();
-        
-        /*         * *********************** */
+    
         $user->name = $user->getName();
         $user->update();
-        /*         * *********************** */
-    
+
         if ($request->hasFile('cv_file')) {
             $this->storeRegistrationCv($request, $user->id);
         }
-        
+    
         event(new Registered($user));
         event(new UserRegistered($user));
         $this->guard()->login($user);
         UserVerification::generate($user);
         UserVerification::send($user, 'User Verification', config('mail.recieve_to.address'), config('mail.recieve_to.name'));
-        
-        // Redirect to verification notice instead of home
+    
         return redirect()->route('email-verification.error');
     }
+
     
     /**
      * Store CV uploaded during registration     
@@ -111,7 +135,7 @@ class RegisterController extends Controller
 
         // Check if already verified
         if ($request->user()->verified) {
-            return redirect()->route('home')->with('success', 'Your email is already verified!');
+            return redirect()->route('home')->with('success', 'Your email is already verified.');
         }
 
         // Generate and send new verification email
@@ -123,7 +147,7 @@ class RegisterController extends Controller
                 config('mail.recieve_to.name')
         );
 
-        return back()->with('success', 'Verification email has been resent! Please check your inbox.');
+        return back()->with('success', 'Verification email has been resent. Please check your inbox.');
     }
 
 

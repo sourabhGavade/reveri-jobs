@@ -64,6 +64,23 @@ use RegistersUsers;
 
     public function register(CompanyFrontRegisterFormRequest $request)
     {
+        // Block spam company names (URLs, numbers, foreign scripts)
+        $nameValidator = Validator::make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[\\p{L}\\s\\-\\\'\\.]+$/u',
+                'regex:/^(?!.*(http|www|tinyurl|\\.com|\\.ru|\\.link|\\d{6,}|\\p{Cyrillic}|\\p{Arabic}|\\p{Devanagari}|\\p{Hiragana}|\\p{Katakana}|\\p{Hangul}|\\p{Greek}|\\p{Hebrew}|\\p{Thai}))[\\p{L}\\s\\-\\\'\\.]+$/u'
+            ]
+        ], [
+            'name.regex' => 'Invalid company name format. Only letters, spaces, hyphens, apostrophes allowed.',
+        ]);
+    
+        if ($nameValidator->fails()) {
+            return back()->withErrors($nameValidator)->withInput();
+        }
+    
         $company = new Company();
         $company->name = $request->input('name');
         $company->email = $request->input('email');
@@ -72,11 +89,10 @@ use RegistersUsers;
         $company->verified = 1;
         
         $company->save();
-        /*         * ******************** */
+        
         $company->slug = Str::slug($company->name, '-') . '-' . $company->id;
         $company->update();
-        /*         * ******************** */
-
+    
         event(new Registered($company));
         event(new CompanyRegistered($company));
         $this->guard()->login($company);
@@ -84,5 +100,6 @@ use RegistersUsers;
         UserVerification::send($company, 'Company Verification', config('mail.recieve_to.address'), config('mail.recieve_to.name'));
         return $this->registered($request, $company) ?: redirect($this->redirectPath());
     }
+    
 
 }
