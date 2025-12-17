@@ -4758,3 +4758,7 @@ Large Mobile Screen
 	margin-left: 20px;
 	font-size: 14px;
   }
+
+  .col-lg-6 .bloginner .western{
+	display:none !important;
+} 
