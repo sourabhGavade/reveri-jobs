@@ -48,6 +48,9 @@ use App\Traits\ProfileLanguageTrait;
 use App\Traits\Skills;
 use App\Traits\JobSeekerPackageTrait;
 use App\Helpers\DataArrayHelper;
+use App\Exports\AdminUsersExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelFormat;
 
 class UserController extends Controller
 {
@@ -273,17 +276,7 @@ class UserController extends Controller
 
     public function fetchUsersData(Request $request)
     {
-       if($request->has('cvStatus') && !empty($request->get('cvStatus')))
-        {
-            if($request->get('cvStatus') == 'Active')
-            {
-                $users = User::with('industry','careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '>', 0);      
-            }else{
-                $users = User::with('industry','careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '=', 0);
-            }
-        }else{
-            $users = User::with('industry','careerLevel')->withCount(['profileCvs']);
-        }
+        $users = $this->buildUsersFilterQuery($request);
         // $users = User::select(
         //                 [
         //                     'users.id',
@@ -305,34 +298,6 @@ class UserController extends Controller
         // ])::with(['profile_cvs']);
         return Datatables::of($users)
                         ->addIndexColumn()
-                        ->filter(function ($query) use ($request) {
-                            if ($request->has('id') && !empty($request->id)) {
-                                $query->where('users.id', 'like', "{$request->get('id')}");
-                            }
-                            if ($request->has('name') && !empty($request->name)) {
-                                $query->where(function($q) use ($request) {
-                                    $q->where('users.first_name', 'like', "%{$request->get('name')}%")
-                                    ->orWhere('users.middle_name', 'like', "%{$request->get('name')}%")
-                                    ->orWhere('users.last_name', 'like', "%{$request->get('name')}%");
-                                });
-                            }
-                            if ($request->has('email') && !empty($request->email)) {
-                                $query->where('users.email', 'like', "%{$request->get('email')}%");
-                            }
-                            if($request->has('created_at') && !empty($request->created_at)){
-                                $query->where('users.created_at', 'like', "%{$request->get('created_at')}%");
-                            }
-                             if($request->has('industry') && !empty($request->get('industry'))){
-                                $query->whereHas('industry', function($q) use ($request){
-                                    $q->where('industry', 'like', "%{$request->get('industry')}%");
-                                });
-                            }
-                            if($request->has('job_position') && !empty($request->get('job_position'))){
-                                $query->whereHas('careerLevel', function($q) use ($request){
-                                    $q->where('career_level', 'like', "%{$request->get('job_position')}%");
-                                });
-                            }
-                        })
                         ->addColumn('cvStatus',function($users){
                                 return (count($users->profileCvs) > 0 ? 'Uploaded' : 'Not Uploaded');
                         })
@@ -392,6 +357,61 @@ class UserController extends Controller
                             return 'user_dt_row_' . $users->id;
                         })
                         ->make(true);
+    }
+
+    public function exportUsers(Request $request)
+    {
+        $users = $this->buildUsersFilterQuery($request);
+        $export = new AdminUsersExport($users);
+
+        $format = strtolower((string) $request->get('format', 'xlsx'));
+        if ($format === 'csv') {
+            return Excel::download($export, 'users_export_' . date('Ymd_His') . '.csv', ExcelFormat::CSV);
+        }
+
+        return Excel::download($export, 'users_export_' . date('Ymd_His') . '.xlsx', ExcelFormat::XLSX);
+    }
+
+    private function buildUsersFilterQuery(Request $request)
+    {
+        if ($request->has('cvStatus') && !empty($request->get('cvStatus'))) {
+            if ($request->get('cvStatus') == 'Active') {
+                $users = User::with('industry', 'careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '>', 0);
+            } else {
+                $users = User::with('industry', 'careerLevel')->withCount(['profileCvs'])->having('profile_cvs_count', '=', 0);
+            }
+        } else {
+            $users = User::with('industry', 'careerLevel')->withCount(['profileCvs']);
+        }
+
+        if ($request->has('id') && !empty($request->id)) {
+            $users->where('users.id', 'like', "{$request->get('id')}");
+        }
+        if ($request->has('name') && !empty($request->name)) {
+            $users->where(function ($q) use ($request) {
+                $q->where('users.first_name', 'like', "%{$request->get('name')}%")
+                    ->orWhere('users.middle_name', 'like', "%{$request->get('name')}%")
+                    ->orWhere('users.last_name', 'like', "%{$request->get('name')}%");
+            });
+        }
+        if ($request->has('email') && !empty($request->email)) {
+            $users->where('users.email', 'like', "%{$request->get('email')}%");
+        }
+        if ($request->has('created_at') && !empty($request->created_at)) {
+            $users->where('users.created_at', 'like', "%{$request->get('created_at')}%");
+        }
+        if ($request->has('industry') && !empty($request->get('industry'))) {
+            $users->whereHas('industry', function ($q) use ($request) {
+                $q->where('industry', 'like', "%{$request->get('industry')}%");
+            });
+        }
+        if ($request->has('job_position') && !empty($request->get('job_position'))) {
+            $users->whereHas('careerLevel', function ($q) use ($request) {
+                $q->where('career_level', 'like', "%{$request->get('job_position')}%");
+            });
+        }
+
+        return $users;
     }
 
     public function makeActiveUser(Request $request)

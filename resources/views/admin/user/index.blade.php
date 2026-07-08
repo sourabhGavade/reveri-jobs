@@ -33,6 +33,8 @@
                         <div class="caption"> <i class="icon-settings font-dark"></i> <span class="caption-subject font-dark sbold uppercase">Users</span> </div>
                         <div class="actions">
                             <a href="{{ route('create.user') }}" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-plus"></i> Add New User</a>
+                            <button type="button" id="export-users-csv" class="btn btn-xs btn-info"><i class="fa fa-download"></i> Export CSV</button>
+                            <button type="button" id="export-users-xlsx" class="btn btn-xs btn-primary"><i class="fa fa-file-excel-o"></i> Export Excel</button>
                             <button type="button" id="delete-selected" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i>Permanently Delete</button>
                         </div>
                     </div>
@@ -80,6 +82,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
 <script>
     $(function () {
+        function getFilterData() {
+            return {
+                id: $('input[name=id]').val(),
+                name: $('input[name=name]').val(),
+                email: $('input[name=email]').val(),
+                created_at: $('input[name=created_at]').val(),
+                job_position: $('input[name=job_position]').val(),
+                industry: $('input[name=industry]').val(),
+                cvStatus: $('#cvStatus').val()
+            };
+        }
+
+        function triggerUsersExport(format) {
+            var query = $.param($.extend(getFilterData(), {format: format}));
+            window.location.href = "{{ route('export.users') }}" + '?' + query;
+        }
+
         var oTable = $('#user_datatable_ajax').DataTable({
             processing: true,
             serverSide: true,
@@ -93,14 +112,7 @@
             ajax: {
                 url: '{!! route('fetch.data.users') !!}',
                 data: function (d) {
-                    console.log(d);
-                    d.id = $('input[name=id]').val();
-                    d.name = $('input[name=name]').val();
-                    d.email = $('input[name=email]').val();
-                    d.created_at = $('input[name=created_at]').val();
-                    d.job_position = $('input[name=job_position]').val();
-                    d.industry = $('input[name=industry]').val();
-                    d.cvStatus = $('#cvStatus').val();
+                    $.extend(d, getFilterData());
                 }
             }, columns: [
                 /*{data: 'id_checkbox', name: 'id_checkbox', orderable: false, searchable: false},*/
@@ -191,6 +203,14 @@
         $('#industry').on('keyup', function (e) {
             oTable.draw();
             e.preventDefault();
+        });
+
+        $('#export-users-csv').on('click', function () {
+            triggerUsersExport('csv');
+        });
+
+        $('#export-users-xlsx').on('click', function () {
+            triggerUsersExport('xlsx');
         });
     });
     function delete_user(id) {

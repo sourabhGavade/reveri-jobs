@@ -9,6 +9,7 @@ Route::put('update-user/{id}', array_merge(['uses' => 'Admin\UserController@upda
 Route::delete('delete-user', array_merge(['uses' => 'Admin\UserController@deleteUser'], $all_users))->name('delete.user');
 Route::delete('delete-users-bulk', array_merge(['uses' => 'Admin\UserController@deleteUsersBulk'], $all_users))->name('delete.users.bulk');
 Route::get('fetch-users', array_merge(['uses' => 'Admin\UserController@fetchUsersData'], $all_users))->name('fetch.data.users');
+Route::get('export-users', array_merge(['uses' => 'Admin\UserController@exportUsers'], $all_users))->name('export.users');
 Route::put('make-active-user', array_merge(['uses' => 'Admin\UserController@makeActiveUser'], $all_users))->name('make.active.user');
 Route::put('make-not-active-user', array_merge(['uses' => 'Admin\UserController@makeNotActiveUser'], $all_users))->name('make.not.active.user');
 Route::put('make-verified-user', array_merge(['uses' => 'Admin\UserController@makeVerifiedUser'], $all_users))->name('make.verified.user');
